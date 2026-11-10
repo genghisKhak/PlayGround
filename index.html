@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101a20">
+<title>Ridge Run — Downhill Clash</title>
+<style>
+:root{--ink:#f7f6ec;--lime:#d8ff3e;--orange:#ff713d;--glass:rgba(13,25,30,.68)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a20;color:var(--ink);font-family:ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;touch-action:none}body{user-select:none;-webkit-user-select:none}#game{display:block;width:100%;height:100%;position:absolute;inset:0}
+.vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(8,19,23,.32),transparent 25%,transparent 72%,rgba(5,12,16,.36));z-index:1}
+.topbar{position:absolute;z-index:2;top:max(14px,env(safe-area-inset-top));left:18px;right:18px;display:flex;align-items:flex-start;justify-content:space-between;pointer-events:none}.brand{font-size:11px;font-weight:1000;letter-spacing:.2em;color:rgba(255,255,255,.77);text-transform:uppercase;text-shadow:0 2px 6px #17242a}.brand b{color:var(--lime);font-size:14px}.race-hud{display:none;align-items:flex-start;gap:8px}.hud-card{min-width:76px;padding:8px 11px;background:var(--glass);border:1px solid #ffffff24;border-radius:12px;backdrop-filter:blur(8px);box-shadow:0 5px 16px #0002}.hud-label{font-size:8px;letter-spacing:.16em;color:#c1ced0;font-weight:900}.hud-value{font-size:18px;font-weight:1000;line-height:1.15}.hud-value small{font-size:10px;color:#cad3ce}.boost-card{width:93px}.boost-track{height:5px;border-radius:5px;background:#ffffff30;margin-top:5px;overflow:hidden}.boost-fill{height:100%;width:60%;background:var(--lime);border-radius:5px;transition:width .15s}
+#toast{position:absolute;z-index:3;top:17%;left:50%;transform:translate(-50%,-10px);font-size:clamp(16px,4vw,27px);font-weight:1000;font-style:italic;letter-spacing:.05em;color:var(--lime);text-shadow:0 3px 0 #192a28,0 6px 16px #0008;opacity:0;transition:.18s;pointer-events:none;white-space:nowrap}#toast.show{opacity:1;transform:translate(-50%,0)}
+.screen{position:absolute;z-index:4;inset:0;display:grid;place-items:center;padding:24px;background:linear-gradient(100deg,rgba(10,22,27,.73),rgba(10,22,27,.12) 65%,rgba(10,22,27,.08));transition:opacity .28s,visibility .28s}.screen.hidden{opacity:0;visibility:hidden;pointer-events:none}.panel{width:min(490px,94vw);margin-right:auto;margin-left:min(5vw,70px);padding:clamp(22px,5vw,42px);border:1px solid #ffffff26;border-radius:22px;background:linear-gradient(145deg,rgba(18,34,38,.91),rgba(14,26,30,.76));box-shadow:0 22px 65px #06101288;backdrop-filter:blur(12px)}.eyebrow{display:flex;align-items:center;gap:8px;color:var(--lime);font-size:10px;letter-spacing:.22em;font-weight:1000;text-transform:uppercase}.eyebrow:before{content:"";width:19px;height:2px;background:var(--lime)}h1{font-size:clamp(45px,9vw,82px);line-height:.84;letter-spacing:-.075em;margin:19px 0 16px;font-weight:1000;font-style:italic;text-transform:uppercase;text-shadow:0 5px 0 #314235}h1 span{display:block;color:var(--lime)}.intro{max-width:350px;color:#d4dfd9;font-size:14px;line-height:1.55;margin:0 0 22px}.controls-note{display:flex;gap:16px;flex-wrap:wrap;font-size:10px;line-height:1.4;color:#b9c9c4;margin:0 0 24px}.controls-note strong{color:#fff;display:block;font-size:11px}.keycap{display:inline-grid;place-items:center;min-width:22px;height:20px;margin-right:3px;padding:0 5px;border-radius:5px;border:1px solid #ffffff55;background:#ffffff16;color:#fff;font-size:10px;font-weight:900}.start{width:100%;border:0;border-radius:12px;padding:16px 18px;background:var(--lime);color:#18231c;font-weight:1000;font-size:14px;letter-spacing:.13em;text-transform:uppercase;box-shadow:0 5px 0 #8eae20;cursor:pointer;transition:transform .1s,filter .1s}.start:active{transform:translateY(3px);box-shadow:0 2px 0 #8eae20}.result h1{font-size:clamp(38px,8vw,64px)}.result .intro{margin-bottom:20px}
+.controls{position:absolute;z-index:3;left:0;right:0;bottom:max(15px,env(safe-area-inset-bottom));display:none;justify-content:space-between;align-items:flex-end;padding:0 19px;pointer-events:none}.pad,.actionset{display:flex;align-items:flex-end;gap:9px;pointer-events:auto}.ctrl{appearance:none;touch-action:none;border:1px solid #ffffff58;color:#fff;background:rgba(15,29,33,.62);backdrop-filter:blur(8px);box-shadow:0 5px 16px #0003;display:grid;place-items:center;border-radius:50%;font-weight:1000;cursor:pointer;-webkit-tap-highlight-color:transparent}.steer{width:58px;height:58px;font-size:25px}.action{width:62px;height:62px;font-size:10px;letter-spacing:.07em;color:#fff}.action.attack{background:rgba(255,113,61,.8);border-color:#ffb397}.action.boost{width:53px;height:53px;background:rgba(216,255,62,.83);color:#19231a;border-color:#f0ffb3;font-size:9px}.ctrl.active{transform:scale(.92);filter:brightness(1.3)}.desktop-hint{position:absolute;z-index:2;bottom:20px;left:50%;transform:translateX(-50%);color:#eaf1dfaa;font-size:10px;letter-spacing:.08em;text-shadow:0 2px 5px #000;pointer-events:none}
+@media(max-width:700px){.topbar{left:12px;right:12px}.brand{font-size:9px}.brand b{font-size:12px}.hud-card{min-width:59px;padding:7px 8px}.hud-label{font-size:7px}.hud-value{font-size:15px}.boost-card{width:69px}.screen{background:linear-gradient(90deg,rgba(10,22,27,.72),rgba(10,22,27,.1))}.panel{margin:0;padding:24px;width:min(410px,94vw)}.intro{font-size:13px}.controls{padding:0 14px;gap:8px}.pad,.actionset{gap:7px}.steer{width:54px;height:54px}.action{width:57px;height:57px}.action.boost{width:49px;height:49px}.desktop-hint{display:none}}
+@media(orientation:portrait){.controls{bottom:max(20px,env(safe-area-inset-bottom))}.screen{place-items:center}}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Downhill bike racing game"></canvas><div class="vignette"></div>
+<div class="topbar"><div class="brand"><b>RIDGE RUN</b> &nbsp; / &nbsp; DOWNHILL CLASH</div><div class="race-hud" id="hud"><div class="hud-card"><div class="hud-label">PLACE</div><div class="hud-value" id="place">1<small> / 5</small></div></div><div class="hud-card"><div class="hud-label">SPEED</div><div class="hud-value"><span id="speed">48</span><small> km/h</small></div></div><div class="hud-card"><div class="hud-label">DISTANCE</div><div class="hud-value"><span id="distance">0</span><small> m</small></div></div><div class="hud-card boost-card"><div class="hud-label">BOOST</div><div class="boost-track"><div class="boost-fill" id="boostFill"></div></div></div></div></div>
+<div id="toast">NICE HIT!</div>
+<div class="screen" id="startScreen"><div class="panel"><div class="eyebrow">ALPINE DESCENT · STAGE 01</div><h1>Ridge<span>Run</span></h1><p class="intro">Drop into the wild. Carve through the pack, throw a shoulder, and own the mountain all the way to the finish.</p><div class="controls-note"><div><strong><span class="keycap">←</span><span class="keycap">→</span> CARVE</strong>Steer through the gates</div><div><strong><span class="keycap">SPACE</span> ATTACK</strong>Clobber nearby rivals</div><div><strong><span class="keycap">SHIFT</span> BOOST</strong>Spend your charge</div></div><button class="start" id="startBtn">Drop in &nbsp; →</button></div></div>
+<div class="screen hidden" id="resultScreen"><div class="panel result"><div class="eyebrow" id="resultEyebrow">STAGE COMPLETE</div><h1 id="resultTitle">Mountain<span>Master</span></h1><p class="intro" id="resultText">You owned the descent.</p><button class="start" id="againBtn">Ride again &nbsp; ↻</button></div></div>
+<div class="controls" id="controls"><div class="pad"><button class="ctrl steer" data-control="left" aria-label="Steer left">‹</button><button class="ctrl steer" data-control="right" aria-label="Steer right">›</button></div><div class="actionset"><button class="ctrl action boost" data-control="boost">BOOST</button><button class="ctrl action attack" data-control="attack">HIT!</button></div></div><div class="desktop-hint" id="desktopHint">← → STEER &nbsp; · &nbsp; SPACE HIT &nbsp; · &nbsp; SHIFT BOOST</div>
+<script>
+(()=>{
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);let W=0,H=0,dpr=1,last=0,mode='menu',time=0,world=0,playerX=0,speed=47,boost=65,score=0,combo=0,shake=0,toastTimer=0,finish=1500,gateTimer=0;
+let rivals=[],trees=[],particles=[],keys={},touches={};
+const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);if(mode==='race')$('desktopHint').style.display=W>700?'block':'none'}window.addEventListener('resize',resize);resize();
+const palette=['#ff7049','#52d7c0','#f4bd43','#b68cff'];
+function makeRivals(){rivals=[];for(let i=0;i<4;i++){rivals.push({id:i,x:rand(-.76,.76),z:rand(65,480),speed:rand(31,47),color:palette[i],helmet:['#f4d94c','#53ddca','#ff725a','#b997ff'][i],lean:0,stun:0,hitFlash:0,name:['MICA','KAI','ROOK','JUNE'][i],bob:rand(0,7)})}}
+function makeTrees(){trees=[];for(let i=0;i<35;i++)trees.push({z:i*55+rand(0,40),side:i%2?1:-1,seed:rand(0,9),kind:Math.random()})}
+function start(){mode='race';time=world=score=combo=0;playerX=0;speed=47;boost=65;shake=0;makeRivals();makeTrees();$('startScreen').classList.add('hidden');$('resultScreen').classList.add('hidden');$('hud').style.display='flex';$('controls').style.display='flex';$('desktopHint').style.display=W>700?'block':'none';}
+$('startBtn').onclick=start;$('againBtn').onclick=start;
+function bind(el,name){el.addEventListener('pointerdown',e=>{e.preventDefault();touches[name]=true;el.classList.add('active');el.setPointerCapture?.(e.pointerId)});for(const ev of ['pointerup','pointercancel','lostpointercapture'])el.addEventListener(ev,e=>{touches[name]=false;el.classList.remove('active')})}
+document.querySelectorAll('[data-control]').forEach(el=>bind(el,el.dataset.control));
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight',' ','Shift','ArrowUp'].includes(e.key))e.preventDefault();keys[e.key.toLowerCase()]=true;if(mode!=='race'&&e.key==='Enter')start()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+function active(k){return !!(touches[k]||keys[k]|| (k==='left'&&keys['a'])||(k==='right'&&keys['d'])||(k==='attack'&&(keys[' ']||keys['z']))||(k==='boost'&&(keys['shift']||keys['x']||keys['arrowup'])))}
+function project(z,x=0){const horizon=H*.34,depth=390/(z+390);return{x:W/2+x*W*.39*depth*2,y:horizon+(H*.58-horizon)*depth,scale:depth}}
+function roadCenter(y){let t=(y/H-.34)/.66;return W/2+Math.sin(world*.0011+t*2.7)*W*.08*t+Math.sin(world*.00047+t*5)*W*.025*t}
+function poly(points,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);ctx.closePath();ctx.fill()}
+function roundRect(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+function drawBackground(){let sky=ctx.createLinearGradient(0,0,0,H*.62);sky.addColorStop(0,'#87c9d0');sky.addColorStop(.55,'#c7dfc7');sky.addColorStop(1,'#e5e0bb');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+// sun + high alpine peaks
+ctx.fillStyle='#ffeaa4';ctx.beginPath();ctx.arc(W*.76,H*.16,Math.min(W,H)*.065,0,Math.PI*2);ctx.fill();
+poly([[0,H*.42],[W*.1,H*.19],[W*.19,H*.34],[W*.32,H*.12],[W*.43,H*.36],[W*.55,H*.2],[W*.71,H*.4],[W*.83,H*.17],[W,H*.39],[W,H*.56],[0,H*.56]],'#758f8b');
+poly([[0,H*.43],[W*.1,H*.19],[W*.145,H*.29],[W*.19,H*.34],[W*.32,H*.12],[W*.37,H*.27],[W*.43,H*.36],[W*.55,H*.2],[W*.64,H*.35],[W*.71,H*.4],[W*.83,H*.17],[W*.9,H*.32],[W,H*.39],[W,H*.48]],'#d6e0d1');
+poly([[0,H*.44],[W*.16,H*.34],[W*.27,H*.42],[W*.43,H*.32],[W*.58,H*.43],[W*.77,H*.29],[W,H*.42],[W,H*.65],[0,H*.65]],'#628176');
+let ground=ctx.createLinearGradient(0,H*.4,0,H);ground.addColorStop(0,'#789b5f');ground.addColorStop(1,'#425f3c');ctx.fillStyle=ground;ctx.fillRect(0,H*.43,W,H*.57);
+// distant spruce silhouettes
+for(let i=0;i<20;i++){let x=i*W/18+Math.sin(i*12)*13,y=H*.43+Math.sin(i*4)*H*.025,s=H*(.07+(i%4)*.009);drawPine(x,y,s,'#486956',.65)}
+}
+function drawPine(x,y,s,color,a=1){ctx.globalAlpha=a;poly([[x,y-s],[x-s*.48,y-s*.25],[x-s*.25,y-s*.25],[x-s*.63,y+s*.12],[x-s*.29,y+s*.12],[x-s*.76,y+s*.47],[x+s*.76,y+s*.47],[x+s*.29,y+s*.12],[x+s*.63,y+s*.12],[x+s*.25,y-s*.25],[x+s*.48,y-s*.25]],color);ctx.globalAlpha=1}
+function drawRoad(){const horizon=H*.34,base=H+30;let cxTop=roadCenter(horizon),cxBottom=roadCenter(base),roadWTop=W*.08,roadWBottom=W*.86;
+// scenery ground texture strips
+for(let i=0;i<12;i++){let y=horizon+(base-horizon)*i/12;ctx.fillStyle=i%2?'#79995e':'#74945a';ctx.fillRect(0,y,W,(base-horizon)/12+1)}
+poly([[cxTop-roadWTop/2,horizon],[cxTop+roadWTop/2,horizon],[cxBottom+roadWBottom/2,base],[cxBottom-roadWBottom/2,base]],'#555c57');
+// gravel stripes and road shoulders
+poly([[cxTop-roadWTop/2,horizon],[cxTop-roadWTop*.43,horizon],[cxBottom-roadWBottom*.43,base],[cxBottom-roadWBottom/2,base]],'#d5c9a0');poly([[cxTop+roadWTop*.43,horizon],[cxTop+roadWTop/2,horizon],[cxBottom+roadWBottom/2,base],[cxBottom+roadWBottom*.43,base]],'#d5c9a0');
+// road texture dashes streaming toward camera
+for(let i=0;i<12;i++){let z=((i*55-world%55)+finish)%finish;let p=project(z,0);if(p.y<horizon||p.y>base)continue;let c=roadCenter(p.y),ww=roadWTop+(roadWBottom-roadWTop)*(p.y-horizon)/(base-horizon);let strip=ww*.012;ctx.fillStyle=i%2?'#62645b':'#6b6c61';ctx.fillRect(c-ww*.39,p.y,strip,p.scale*5+2);ctx.fillRect(c+ww*.35,p.y,strip,p.scale*5+2)}
+// dashed center line
+for(let i=0;i<14;i++){let z=((i*48-world%48)+finish)%finish,p=project(z);if(p.y<horizon||p.y>base)continue;let y=p.y,ww=roadWTop+(roadWBottom-roadWTop)*(y-horizon)/(base-horizon);ctx.fillStyle='#dfd5ae';ctx.globalAlpha=.78;ctx.fillRect(roadCenter(y)-ww*.008,y,ww*.016,Math.max(2,p.scale*9));ctx.globalAlpha=1}
+// side bank berm bottom depth gives speed
+ctx.globalAlpha=.22;ctx.fillStyle='#263a31';ctx.fillRect(0,H*.65,W,H*.35);ctx.globalAlpha=1;
+}
+function scenery(){for(const t of trees){let z=((t.z-world%1900)+1900)%1900;if(z<16)continue;let p=project(z,t.side*1.35);if(p.y<H*.34||p.y>H*1.04)continue;let x=roadCenter(p.y)+t.side*(W*.055+W*.46*p.scale);let s=clamp(p.scale*H*.24,3,H*.25);drawPine(x,p.y,s,t.seed%2?'#294c3b':'#31543e',.72);if(s>15){ctx.fillStyle='#ceb98c';ctx.fillRect(x-s*.035,p.y-s*.05,s*.07,s*.27)}}}
+function drawBike(x,y,s,color,helmet,lean=0,player=false,hit=false){ctx.save();ctx.translate(x,y);ctx.rotate(lean*.24);let k=s;ctx.scale(k,k);
+// shadow
+ctx.fillStyle='#14252166';ctx.beginPath();ctx.ellipse(0,2,20,6,0,0,Math.PI*2);ctx.fill();
+// wheels
+for(const wx of [-11,11]){ctx.strokeStyle='#172127';ctx.lineWidth=2.8;ctx.beginPath();ctx.arc(wx,0,7,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#c7c8b7';ctx.lineWidth=.65;ctx.beginPath();ctx.moveTo(wx-5,0);ctx.lineTo(wx+5,0);ctx.moveTo(wx,-5);ctx.lineTo(wx,5);ctx.stroke()}
+// bike frame
+ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=player?'#d8ff3e':'#f3c950';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-11,0);ctx.lineTo(-3,-8);ctx.lineTo(3,0);ctx.lineTo(-11,0);ctx.lineTo(5,-9);ctx.lineTo(11,0);ctx.moveTo(3,0);ctx.lineTo(5,-9);ctx.stroke();ctx.strokeStyle='#26323a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-3,-9);ctx.lineTo(-7,-12);ctx.moveTo(5,-9);ctx.lineTo(8,-13);ctx.stroke();
+// rider arms/legs and torso
+ctx.strokeStyle='#202b30';ctx.lineWidth=3.4;ctx.beginPath();ctx.moveTo(-4,-13);ctx.lineTo(-9,-7);ctx.lineTo(-7,-4);ctx.moveTo(4,-13);ctx.lineTo(7,-8);ctx.lineTo(8,-13);ctx.stroke();ctx.strokeStyle=hit?'#fff':color;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-4,-15);ctx.lineTo(3,-17);ctx.lineTo(5,-11);ctx.stroke();ctx.strokeStyle='#222b30';ctx.lineWidth=3.2;ctx.beginPath();ctx.moveTo(-2,-15);ctx.lineTo(-4,-10);ctx.lineTo(2,-8);ctx.moveTo(2,-16);ctx.lineTo(7,-12);ctx.stroke();
+// head + helmet
+ctx.fillStyle='#dca879';ctx.beginPath();ctx.arc(1,-21,4.1,0,Math.PI*2);ctx.fill();ctx.fillStyle=hit?'#fff':helmet;ctx.beginPath();ctx.arc(1,-23,4.6,Math.PI,Math.PI*2);ctx.lineTo(6,-21);ctx.lineTo(-3,-21);ctx.fill();ctx.fillStyle='#192428';ctx.fillRect(2,-22,5,1.3);
+if(player){ctx.strokeStyle='#d8ff3e';ctx.globalAlpha=.75;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,-11,19,Math.PI*1.04,Math.PI*1.96);ctx.stroke()}
+ctx.restore()}
+function drawRival(r){if(r.z<-8||r.z>720)return;let p=project(r.z,r.x);let x=roadCenter(p.y)+r.x*(W*.39*p.scale*2),y=p.y;let s=clamp(p.scale*1.13,.14,1.1);if(y>H*.29)drawBike(x,y,s,r.color,r.helmet,r.lean,false,r.hitFlash>0);if(s>.23){ctx.font=`900 ${Math.max(7,s*10)}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#ffffffcc';ctx.fillText(r.name,x,y-s*32)}}
+function drawPlayer(){let y=H*.8,x=roadCenter(y)+playerX*W*.3,s=clamp(H/540,.72,1.35);if(shake>0)x+=rand(-shake,shake);drawBike(x,y,s,'#344e56','#d8ff3e',active('left')?-0.7:active('right')?.7:0,true,false);
+// speed streaks while boosting
+if(active('boost')&&boost>0){ctx.strokeStyle='#e2ff88aa';ctx.lineWidth=2;for(let i=0;i<8;i++){let sx=x+rand(-W*.45,W*.45),sy=rand(H*.55,H);ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+rand(-7,7),sy+rand(12,40));ctx.stroke()}}}
+function update(dt){if(mode!=='race')return;time+=dt;let left=active('left'),right=active('right'),attacking=active('attack'),boosting=active('boost')&&boost>0;
+playerX=clamp(playerX+(right-left)*dt*(1.55+speed*.006),-.97,.97);if(boosting){boost=Math.max(0,boost-dt*27);speed+=(76-speed)*dt*1.6}else{boost=Math.min(100,boost+dt*5.2);speed+=(49-speed)*dt*.42}
+if(Math.abs(playerX)>.84)speed=Math.max(25,speed-dt*12);else speed=Math.min(62,speed+dt*1.1);
+world+=speed*dt*2.6;let m=Math.floor(world/2.6);$('distance').textContent=Math.max(0,Math.floor(m));$('speed').textContent=Math.round(speed);
+let rank=1+rivals.filter(r=>r.z<0).length;$('place').innerHTML=`${rank}<small> / 5</small>`;
+for(const r of rivals){r.z+=(r.speed-speed)*dt*2.45;r.x+=Math.sin(time*.8+r.id*2)*dt*.04;r.stun=Math.max(0,r.stun-dt);r.hitFlash=Math.max(0,r.hitFlash-dt);if(r.stun===0){r.speed=clamp(r.speed+Math.sin(time*.63+r.id)*dt*1.4,32,49)}if(r.z< -40){r.z=rand(260,540);r.x=rand(-.8,.8);r.speed=rand(36,48)}}
+if(attacking){for(const r of rivals){if(Math.abs(r.z)<50&&Math.abs(r.x-playerX)<.36&&r.stun<=0){r.stun=2.7;r.z+=115;r.x+=r.x<playerX?-.52:.52;r.speed=23;r.hitFlash=.4;score+=100+combo*25;combo++;shake=7;toast(combo>1?`COMBO x${combo}!`:'CLEAN HIT!');burst(roadCenter(H*.8)+playerX*W*.3,H*.8);break}}}
+if(!attacking&&combo>0&&time%1.5<dt)combo=0;
+if(playerX<-.96||playerX>.96){speed=Math.max(27,speed-dt*20);shake=Math.max(shake,2)}shake=Math.max(0,shake-dt*24);
+if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('toast').classList.remove('show')}
+if(world/2.6>=finish)endRace();}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');toastTimer=1.15}
+function burst(x,y){for(let i=0;i<15;i++)particles.push({x,y,vx:rand(-100,100),vy:rand(-150,50),life:rand(.25,.55),c:i%2?'#d8ff3e':'#ff713d'})}
+function drawParticles(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=250*dt;p.life-=dt;ctx.globalAlpha=clamp(p.life*2,0,1);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;if(p.life<=0)particles.splice(i,1)}}
+function endRace(){mode='result';let pos=Number($('place').textContent.split('/')[0]);$('resultEyebrow').textContent=pos===1?'STAGE COMPLETE':'FINISH LINE';$('resultTitle').innerHTML=pos===1?'Mountain<span>Master</span>':`Place <span>${pos}${pos===2?'nd':pos===3?'rd':'th'}</span>`;$('resultText').textContent=pos===1?`You owned the descent with ${score.toLocaleString()} clash points. The mountain is yours.`:`You crossed the line with ${score.toLocaleString()} clash points. Take another run at the summit.`;$('resultScreen').classList.remove('hidden');$('controls').style.display='none';$('desktopHint').style.display='none'}
+function draw(dt){drawBackground();drawRoad();scenery();for(const r of [...rivals].sort((a,b)=>b.z-a.z))drawRival(r);if(mode!=='menu')drawPlayer();drawParticles(dt);if(mode==='menu'){// cinematic background riders
+for(let i=0;i<3;i++){let x=W*(.52+i*.11),y=H*(.76+Math.sin(i*2)*.04);drawBike(x,y,Math.min(W,H)/470,['#ff7049','#52d7c0','#f4bd43'][i],['#f4d94c','#53ddca','#ff725a'][i],0,false,false)}}}
+function loop(now){let dt=Math.min(.04,(now-last)/1000||0);last=now;update(dt);draw(dt);requestAnimationFrame(loop)}makeRivals();makeTrees();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
